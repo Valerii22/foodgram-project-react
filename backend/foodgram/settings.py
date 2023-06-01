@@ -122,9 +122,6 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
-# Email
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-FROM_EMAIL = os.getenv('FROM_EMAIL', 'info@mail.com')
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
