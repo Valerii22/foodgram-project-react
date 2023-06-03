@@ -49,5 +49,3 @@ class FavouriteAdmin(admin.ModelAdmin):
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
     list_filter = ('user', )
-
-

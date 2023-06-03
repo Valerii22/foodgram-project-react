@@ -1,4 +1,3 @@
-from django.core.validators import RegexValidator
 from django.db import models
 from django.core.validators import MinValueValidator
 
@@ -104,6 +103,10 @@ class IngredientAmount(models.Model):
     class Meta:
         verbose_name = 'Ингредиенты в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
+        constraints = [
+            models.UniqueConstraint(fields=['recipe', 'ingredient'],
+                                    name='unique_recipe_ingredient')
+        ]
 
     def __str__(self):
         return f'{self.ingredient}: {self.amount}'
