@@ -155,7 +155,7 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         for item in ingredients:
             buy_list_text += (
-                f'{item["name"]}, {item["amount"]} ' 
+                f'{item["name"]}, {item["total"]} ' 
                 f'{item["measurement_unit"]}\n'
             )
 
