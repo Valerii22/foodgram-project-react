@@ -62,7 +62,7 @@ class CurrentUserViewSet(UserViewSet):
                 return Response(
                     {'detail': 'Вы уже подписаны на этого пользователя'},
                     status=status.HTTP_400_BAD_REQUEST
-                    )
+                )
             Follow.objects.create(user=user, author=author)
             serializer = self.get_serializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -70,7 +70,7 @@ class CurrentUserViewSet(UserViewSet):
             return Response(
                 {'detail': 'Вы не подписаны на этого пользователя'},
                 status=status.HTTP_400_BAD_REQUEST
-                )
+            )
         Follow.objects.filter(user=user, author=author).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -98,9 +98,11 @@ class FavoriteShoppingCartMixin:
             return Response(
                 {'errors': 'Уже добавлен'},
                 status=status.HTTP_400_BAD_REQUEST
-                )
+            )
         model.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(instance=recipe, context={'request': request})
+        serializer = ShortRecipeSerializer(
+            instance=recipe, context={'request': request}
+            )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
@@ -111,7 +113,7 @@ class FavoriteShoppingCartMixin:
             return Response(
                 {'errors': 'Уже удален'},
                 status=status.HTTP_400_BAD_REQUEST
-                )
+            )
         model.objects.filter(user=user, recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -129,14 +131,21 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
 
         return RecipeSerializer
 
-    
-    @action(detail=True, methods=('POST', 'DELETE'), permission_classes=[IsAuthenticated])
+    @action(
+        detail=True,
+        methods=('POST', 'DELETE'),
+        permission_classes=[IsAuthenticated]
+        )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
             return self.create_method(Favourite, pk, request)
         return self.delete_method(Favourite, pk, request)
 
-    @action(detail=True, methods=('POST', 'DELETE'), permission_classes=[IsAuthenticated])
+    @action(
+        detail=True,
+        methods=('POST', 'DELETE'),
+        permission_classes=[IsAuthenticated]
+        )
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
             return self.create_method(ShoppingCart, pk, request)
@@ -147,7 +156,7 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
         methods=('get',),
         permission_classes=(IsAuthenticated,)
     )
-    def download_shopping_cart(self,request):
+    def download_shopping_cart(self, request):
         ingredients = IngredientAmount.objects.filter(
             recipe__shopping_cart__user=request.user
         ).values(
@@ -158,7 +167,7 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         for item in ingredients:
             buy_list_text += (
-                f'{item["name"]}, {item["total"]} ' 
+                f'{item["name"]}, {item["total"]}'
                 f'{item["measurement_unit"]}\n'
             )
 

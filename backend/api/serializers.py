@@ -160,10 +160,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = (
             'author',
-            'ingredients', 
-            'tags', 
-            'cooking_time', 
-            'image', 
+            'ingredients',
+            'tags',
+            'cooking_time',
+            'image',
             'name'
         )
 
