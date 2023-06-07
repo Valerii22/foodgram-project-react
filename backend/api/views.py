@@ -102,7 +102,7 @@ class FavoriteShoppingCartMixin:
         model.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipeSerializer(
             instance=recipe, context={'request': request}
-            )
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
@@ -135,7 +135,7 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
         detail=True,
         methods=('POST', 'DELETE'),
         permission_classes=[IsAuthenticated]
-        )
+    )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
             return self.create_method(Favourite, pk, request)
@@ -145,7 +145,7 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
         detail=True,
         methods=('POST', 'DELETE'),
         permission_classes=[IsAuthenticated]
-        )
+    )
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
             return self.create_method(ShoppingCart, pk, request)
