@@ -103,7 +103,6 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(source='ingredient.id')
     name = serializers.SerializerMethodField(source='ingredient.name')
@@ -202,7 +201,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
         return value
     
-
     @staticmethod
     def create_ingredients(recipe, ingredients):
         ingredient_list = []

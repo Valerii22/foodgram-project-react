@@ -20,6 +20,7 @@ class RecipeFilter(FilterSet):
             return queryset.filter(favorites__user=self.request.user)
         return queryset
     
+    
 class IngredientFilter(FilterSet):
     name = filters.CharFilter(lookup_expr='startswith')
 

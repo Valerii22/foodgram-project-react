@@ -108,7 +108,7 @@ jobs:
     needs: deploy
     steps:
       - name: Send message
-        uses: /telegram-action@master
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
