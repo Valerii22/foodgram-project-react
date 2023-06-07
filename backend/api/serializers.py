@@ -106,7 +106,9 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(source='ingredient.id')
     name = serializers.SerializerMethodField(source='ingredient.name')
-    measurement_unit = serializers.SerializerMethodField(source='ingredient.measurement_unit')
+    measurement_unit = serializers.SerializerMethodField(
+            source='ingredient.measurement_unit'
+        )
 
     class Meta:
         model = IngredientAmount
@@ -157,8 +159,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('author', 'ingredients', 'tags', 'cooking_time', 'image', 'name')
-
-        
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
