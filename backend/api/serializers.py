@@ -99,7 +99,7 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         if data['user'] == data['author']:
             raise serializers.ValidationError(
                 'Вы не можете подписаться на самого себя.'
-                )
+            )
         return data
 
 
@@ -107,8 +107,8 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(source='ingredient.id')
     name = serializers.SerializerMethodField(source='ingredient.name')
     measurement_unit = serializers.SerializerMethodField(
-            source='ingredient.measurement_unit'
-        )
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
         model = IngredientAmount
@@ -158,7 +158,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('author', 'ingredients', 'tags', 'cooking_time', 'image', 'name')
+        fields = (
+            'author',
+            'ingredients', 
+            'tags', 
+            'cooking_time', 
+            'image', 
+            'name'
+        )
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):

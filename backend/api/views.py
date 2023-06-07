@@ -42,7 +42,6 @@ class CurrentUserViewSet(UserViewSet):
             many=True, context={'request': request}
         ).data
         return self.get_paginated_response(serialized_subscriptions)
-        
 
     @action(
         methods=['post', 'delete'], detail=True,
@@ -60,14 +59,18 @@ class CurrentUserViewSet(UserViewSet):
                 return Response({'detail': 'Подписаться на себя запрещено'},
                                 status=status.HTTP_400_BAD_REQUEST)
             if follow_search.exists():
-                return Response({'detail': 'Вы уже подписаны на этого пользователя'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'detail': 'Вы уже подписаны на этого пользователя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
             Follow.objects.create(user=user, author=author)
             serializer = self.get_serializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if not follow_search.exists():
-            return Response({'detail': 'Вы не подписаны на этого пользователя'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'detail': 'Вы не подписаны на этого пользователя'},
+                status=status.HTTP_400_BAD_REQUEST
+                )
         Follow.objects.filter(user=user, author=author).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
