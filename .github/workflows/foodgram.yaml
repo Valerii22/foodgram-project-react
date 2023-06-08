@@ -80,8 +80,9 @@ jobs:
       - build_and_push_frontend_to_docker_hub
     steps:
       - name: Executing remote ssh commands to deploy
-        uses: actions/checkout
+        uses: actions/checkout@v3
         with:
+          path: my-repo
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
