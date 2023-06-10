@@ -70,8 +70,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
-            sudo docker-compose stop
-            sudo docker-compose rm backend
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
             touch .env
             echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
