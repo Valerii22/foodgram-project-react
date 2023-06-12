@@ -88,7 +88,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
 
 
-class FavoriteShoppingCartMixin:
+class CreateDeliteMixin:
 
     @staticmethod
     def create_method(model, recipe_pk, request):
@@ -118,7 +118,7 @@ class FavoriteShoppingCartMixin:
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
+class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrAdminPermission,)
     filter_backends = (DjangoFilterBackend,)
