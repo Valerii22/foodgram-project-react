@@ -103,7 +103,6 @@ class CreateDeliteMixin:
         serializer = ShortRecipeSerializer(
             instance=recipe, context={'request': request}
         )
-        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
