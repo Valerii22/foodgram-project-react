@@ -104,9 +104,9 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField(source='ingredient.id')
-    name = serializers.SerializerMethodField(source='ingredient.name')
-    measurement_unit = serializers.SerializerMethodField(
+    id = ReadOnlyField(source='ingredient.id')
+    name = ReadOnlyField(source='ingredient.name')
+    measurement_unit = ReadOnlyField(
         source='ingredient.measurement_unit'
     )
 
