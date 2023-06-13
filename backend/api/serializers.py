@@ -134,7 +134,7 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    ingredients = RecipeIngredientsSerializer(many=True, source='amount')
+    ingredients = RecipeIngredientsSerializer(many=True, source='ingredients')
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
