@@ -168,7 +168,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'image',
             'name',
             'is_in_shopping_cart',
-            'is_favourited',
+            'is_favorited',
         )
 
 
