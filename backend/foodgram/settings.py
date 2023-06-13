@@ -14,6 +14,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000'
+                        'http://web:8000/admin/'
+                        'http://localhost:3000' 
+                        'http://localhost:8080'
+                        'http://130.193.41.183/admin'
+                        'https://130.193.41.183/admin 
+                        'https:/https://130.193.41.183/']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
