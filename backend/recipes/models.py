@@ -64,6 +64,11 @@ class Recipe(models.Model):
         verbose_name='Время приготовления, мин',
         validators=[MinValueValidator(1), ]
     )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientAmount',
+        verbose_name='Ингредиенты'
+    )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
