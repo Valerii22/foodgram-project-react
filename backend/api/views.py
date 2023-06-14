@@ -156,20 +156,22 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        ingredients = request.user.shopping_cart.values(
-            'recipe__amount_recipe__ingredient__name',
-            'recipe__amount_recipe__ingredient__measurement_unit'
-        ).annotate(total=Sum('recipe__amount_recipe__amount'))
+        ingredients = IngredientAmount.objects.filter(
+            recipe__shopping_cart__user=request.user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(total=Sum('amount'))
+        byu_list_count = 0
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
-        count_ingredients = 0
         for item in ingredients:
-            count_ingredients += 1
+            buy_list_count +=1
             buy_list_text += (
-                f'{count_ingredients}) '
-                f'{item["recipe__amount_recipe__ingredient__name"]} - '
-                f'{item["total"]} '
-                f'({item["recipe__amount_recipe__ingredient__measurement_unit"]}) \n'
+                f'{buy_list_count})'
+                f'{item["name"]}, {item["total"]}'
+                f'{item["measurement_unit"]}\n'
             )
+
         response = HttpResponse(buy_list_text, content_type="text/plain")
         response['Content-Disposition'] = (
             'attachment; filename=shopping-list.txt'
