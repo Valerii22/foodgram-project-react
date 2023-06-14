@@ -213,15 +213,16 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     @staticmethod
-    def create_ingredients(recipe, ingredients):
-        ingredient_list = []
-        for ingredient_data in ingredients:
-            ingredient_list.append(
-                IngredientAmount(
-                    ingredient=ingredient_data.pop('id'),
-                    amount=ingredient_data.pop('amount'),
-                    recipe=recipe,))
-        IngredientAmount.objects.bulk_create(ingredient_list)
+    def create_ingredients(self, recipe, ingredients):
+        IngredientAmount.objects.bulk_create([
+            IngredientAmount(
+                recipe=recipe,
+                ingredient=get_object_or_404(
+                    Ingredient,
+                    pk=ingr.get('id')),
+                amount=ingr.get('amount')
+            ) for ingr in ingredients
+        ])
 
     def create(self, validated_data):
         request = self.context.get('request', None)
