@@ -15,7 +15,7 @@ from .permissions import IsAuthorOrAdminPermission
 from .pagination import CustomPagination
 from .filters import RecipeFilter
 from users.models import User, Follow
-from recipes.models import (IngredientAmount
+from recipes.models import (IngredientAmount,
                             Recipe, ShoppingCart,
                             Tag, Ingredient, Favourite)
 
