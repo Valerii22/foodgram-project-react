@@ -91,19 +91,18 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class CreateDeliteMixin:
 
     @staticmethod
-    def create_method(model, recipe_pk, request):
+    def create_method(self, model, pk, request):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=recipe_pk)
-        if model.objects.filter(recipe=recipe, user=user).exists():
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {'errors': 'Уже добавлен'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         model.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(
-            instance=recipe, context={'request': request}
-        )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = ShortRecipeSerializer(recipe)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED)
 
     @staticmethod
     def delete_method(model, recipe_pk, request):
@@ -138,8 +137,8 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(Favourite, pk, request)
-        return self.delete_method(Favourite, pk, request)
+            return self.create_method(Favourite, pk, request.user)
+        return self.delete_method(Favourite, pk, request.user)
 
     @action(
         detail=True,
@@ -148,8 +147,8 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     )
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(ShoppingCart, pk, request)
-        return self.delete_method(ShoppingCart, pk, request)
+            return self.create_method(ShoppingCart, pk, request.user)
+        return self.delete_method(ShoppingCart, pk, request.user)
 
     @action(
         detail=False,
