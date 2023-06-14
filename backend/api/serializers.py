@@ -230,7 +230,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         tags = self.initial_data.get('tags')
         cooking_time = validated_data.pop('cooking_time')
         new_recipe = Recipe.objects.create(
-            author=request.user,
+            author = serializers.CurrentUserDefault()(self)
             cooking_time=cooking_time,
             **validated_data
         )
