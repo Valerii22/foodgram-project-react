@@ -166,7 +166,7 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
         buy_list_count = 0
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         for item in ingredients:
-            buy_list_count+=1
+            buy_list_count += 1
             buy_list_text += (
                 f'{buy_list_count})'
                 f'{item["name"]}, {item["total"]}'
