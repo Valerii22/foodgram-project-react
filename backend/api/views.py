@@ -137,7 +137,7 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(Favourite, pk, request.)
+            return self.create_method(Favourite, pk, request)
         return self.delete_method(Favourite, pk, request)
 
     @action(
