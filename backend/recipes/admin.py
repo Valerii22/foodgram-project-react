@@ -21,11 +21,6 @@ class RecipesAdmin(admin.ModelAdmin):
     inlines = [IngredientAmountInstanceInline]
     list_filter = ('name', )
 
-    def added_in_favorites(self, obj):
-        return obj.favorite.all().count()
-
-    added_in_favorites.short_description = 'Количество добавлений в избранное'
-
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
