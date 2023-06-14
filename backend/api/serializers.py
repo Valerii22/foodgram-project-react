@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core import exceptions
 from django.core.validators import MinValueValidator
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from drf_extra_fields.fields import Base64ImageField
@@ -214,29 +213,24 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     @staticmethod
-    def create_ingredients(self, recipe, ingredients):
-        IngredientAmount.objects.bulk_create([
-            IngredientAmount(
-                recipe=recipe,
-                ingredient=get_object_or_404(
-                    Ingredient,
-                    pk=ingr.get('id')),
-                amount=ingr.get('amount')
-            ) for ingr in ingredients
-        ])
+    def create_ingredients(recipe, ingredients):
+        ingredient_list = []
+        for ingredient_data in ingredients:
+            ingredient_list.append(
+                IngredientAmount(
+                    ingredient=ingredient_data.pop('id'),
+                    amount=ingredient_data.pop('amount'),
+                    recipe=recipe,))
+        IngredientAmount.objects.bulk_create(ingredient_list)
 
     def create(self, validated_data):
+        request = self.context.get('request', None)
+        tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        tags = self.initial_data.get('tags')
-        cooking_time = validated_data.pop('cooking_time')
-        new_recipe = Recipe.objects.create(
-            author=serializers.CurrentUserDefault()(self),
-            cooking_time=cooking_time,
-            **validated_data
-        )
-        new_recipe.tags.set(tags)
-        self.create_ingredients(new_recipe, ingredients)
-        return new_recipe
+        recipe = Recipe.objects.create(author=request.user, **validated_data)
+        recipe.tags.set(tags)
+        self.create_ingredients(recipe, ingredients)
+        return recipe
 
     def update(self, instance, validated_data):
         instance.tags.clear()
