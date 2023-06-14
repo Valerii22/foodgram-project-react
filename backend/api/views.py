@@ -158,7 +158,7 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     )
     def download_shopping_cart(self, request):
         ingredients = IngredientAmount.objects.filter(
-            user=request.user
+            recipe_user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
