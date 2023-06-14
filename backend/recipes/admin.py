@@ -15,9 +15,7 @@ class RecipesAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
-        'added_in_favorites'
     )
-    readonly_fields = ('added_in_favorites',)
     inlines = [IngredientAmountInstanceInline]
     list_filter = ('name', )
 
