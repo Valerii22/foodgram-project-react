@@ -223,7 +223,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                     amount=ingredient_data.pop('amount'),
                     recipe=recipe,))
         IngredientAmount.objects.bulk_create(ingredient_list)
-        
+
     @transaction.atomic
     def create(self, validated_data):
         request = self.context.get('request', None)
