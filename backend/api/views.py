@@ -15,7 +15,8 @@ from .permissions import IsAuthorOrAdminPermission
 from .pagination import CustomPagination
 from .filters import RecipeFilter
 from users.models import User, Follow
-from recipes.models import (Recipe, ShoppingCart,
+from recipes.models import (IngredientAmount
+                            Recipe, ShoppingCart,
                             Tag, Ingredient, Favourite)
 
 
@@ -162,7 +163,7 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(total=Sum('amount'))
-        byu_list_count = 0
+        buy_list_count = 0
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         for item in ingredients:
             buy_list_count +=1
@@ -171,7 +172,6 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
                 f'{item["name"]}, {item["total"]}'
                 f'{item["measurement_unit"]}\n'
             )
-
         response = HttpResponse(buy_list_text, content_type="text/plain")
         response['Content-Disposition'] = (
             'attachment; filename=shopping-list.txt'
