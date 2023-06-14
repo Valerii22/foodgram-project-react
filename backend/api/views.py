@@ -159,7 +159,7 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
         ingredients = request.user.shopping_cart.values(
             'recipe__amount_recipe__ingredient__name',
             'recipe__amount_recipe__ingredient__measurement_unit'
-        ).annotate(total=Sum('recipe__ingredients_amount__amount'))
+        ).annotate(total=Sum('recipe__amount_recipe__amount'))
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         count_ingredients = 0
         for item in ingredients:
