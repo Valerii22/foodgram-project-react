@@ -157,8 +157,8 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     )
     def download_shopping_cart(self, request):
         ingredients = request.user.shopping_cart.values(
-            'recipe__ingredients_amount__ingredient__name',
-            'recipe__ingredients_amount__ingredient__measurement_unit'
+            'recipe__amount_recipe__ingredient__name',
+            'recipe__amount_recipe__ingredient__measurement_unit'
         ).annotate(total=Sum('recipe__ingredients_amount__amount'))
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         count_ingredients = 0
@@ -166,9 +166,9 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             count_ingredients += 1
             buy_list_text += (
                 f'{count_ingredients}) '
-                f'{item["recipe__ingredients_amount__ingredient__name"]} - '
+                f'{item["recipe__amount_recipe__ingredient__name"]} - '
                 f'{item["total"]} '
-                f'({item["recipe__ingredients_amount__ingredient__measurement_unit"]}) \n'
+                f'({item["recipe__amount_recipe__ingredient__measurement_unit"]}) \n'
             )
         response = HttpResponse(buy_list_text, content_type="text/plain")
         response['Content-Disposition'] = (
