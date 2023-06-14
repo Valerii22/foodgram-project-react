@@ -212,7 +212,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 )
 
         return value
-
+    
+    @staticmethod
     def create_ingredients(recipe, ingredients):
         ingredient_list = []
         for ingredient_data in ingredients:
