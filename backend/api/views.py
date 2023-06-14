@@ -15,8 +15,7 @@ from .permissions import IsAuthorOrAdminPermission
 from .pagination import CustomPagination
 from .filters import RecipeFilter
 from users.models import User, Follow
-from recipes.models import (IngredientAmount,
-                            Recipe, ShoppingCart,
+from recipes.models import (Recipe, ShoppingCart,
                             Tag, Ingredient, Favourite)
 
 
@@ -167,9 +166,9 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             count_ingredients += 1
             buy_list_text += (
                 f'{count_ingredients}) '
-                f'{ingr["recipe__ingredients_amount__ingredient__name"]} - '
-                f'{ingr["total"]} '
-                f'({ingr["recipe__ingredients_amount__ingredient__measurement_unit"]}) \n'
+                f'{item["recipe__ingredients_amount__ingredient__name"]} - '
+                f'{item["total"]} '
+                f'({item["recipe__ingredients_amount__ingredient__measurement_unit"]}) \n'
             )
         response = HttpResponse(buy_list_text, content_type="text/plain")
         response['Content-Disposition'] = (
