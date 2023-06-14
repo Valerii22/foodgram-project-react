@@ -226,28 +226,32 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         ])
 
     def create(self, validated_data):
-        request = self.context.get('request', None)
-        tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
-        recipe.tags.set(tags)
-        self.create_ingredients(recipe, ingredients)
-        return recipe
+        tags = self.initial_data.get('tags')
+        cooking_time = validated_data.pop('cooking_time')
+        new_recipe = Recipe.objects.create(
+            author=request.user,
+            cooking_time=cooking_time,
+            **validated_data
+        )
+        new_recipe.tags.set(tags)
+        self.create_ingredients(new_recipe, ingredients)
+        return new_recipe
 
-    def update(self, instance, validated_data):
-        instance.tags.clear()
-        IngredientAmount.objects.filter(recipe=instance).delete()
-        instance.tags.set(validated_data.pop('tags'))
-        ingredients = validated_data.pop('ingredients')
-        self.create_ingredients(instance, ingredients)
-        return super().update(instance, validated_data)
+    def update(self, recipe, validated_data):
+        if "ingredients" in validated_data:
+            ingredients = validated_data.pop("ingredients")
+            recipe.ingredients_amount.all().delete()
+            self.create_ingredients(recipe, ingredients)
+        tags = self.initial_data.pop("tags")
+        recipe.tags.set(tags)
+        return super().update(recipe, validated_data)
 
     def to_representation(self, instance):
         serializer = RecipeSerializer(
             instance,
             context={'request': self.context.get('request')}
         )
-
         return serializer.data
 
     class Meta:
