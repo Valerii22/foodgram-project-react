@@ -91,18 +91,19 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class CreateDeliteMixin:
 
     @staticmethod
-    def create_method(self, model, pk, request):
+    def create_method(model, recipe_pk, request):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        if model.objects.filter(user=user, recipe__id=pk).exists():
+        recipe = get_object_or_404(Recipe, pk=recipe_pk)
+        if model.objects.filter(recipe=recipe, user=user).exists():
             return Response(
                 {'errors': 'Уже добавлен'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         model.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(recipe)
-        return Response(serializer.data,
-                        status=status.HTTP_201_CREATED)
+        serializer = ShortRecipeSerializer(
+            instance=recipe, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def delete_method(model, recipe_pk, request):
