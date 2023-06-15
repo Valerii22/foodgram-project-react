@@ -15,7 +15,7 @@ from .permissions import IsAuthorOrAdminPermission
 from .pagination import CustomPagination
 from .filters import RecipeFilter
 from users.models import User, Follow
-from recipes.models import (IngredientAmount,
+from recipes.models import (RecipeIngredient,
                             Recipe, ShoppingCart,
                             Tag, Ingredient, Favourite)
 
@@ -151,30 +151,21 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             return self.create_method(ShoppingCart, pk, request)
         return self.delete_method(ShoppingCart, pk, request)
 
-    @action(
-        detail=False,
-        methods=('get',),
-        permission_classes=(IsAuthenticated,)
-    )
-    def download_shopping_cart(self, request):
-        ingredients = IngredientAmount.objects.filter(
-            recipe__shopping_cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(total=Sum('amount'))
-        buy_list_count = 0
-        buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
-        for item in ingredients:
-            buy_list_count += 1
-            buy_list_text += (
-                f'{buy_list_count})'
-                f'{item["name"]}, {item["total"]}'
-                f'{item["measurement_unit"]}\n'
-            )
-        response = HttpResponse(buy_list_text, content_type="text/plain")
-        response['Content-Disposition'] = (
-            'attachment; filename=shopping-list.txt'
+    @action(detail=False, methods=['get'],
+            permission_classes=(IsAuthenticated,))
+    def download_shopping_cart(self, request, **kwargs):
+        ingredients = (
+            RecipeIngredient.objects
+            .filter(recipe__shopping_recipe__user=request.user)
+            .values('ingredient')
+            .annotate(total_amount=Sum('amount'))
+            .values_list('ingredient__name', 'total_amount',
+                         'ingredient__measurement_unit')
         )
-
-        return response
+        file_list = []
+        [file_list.append(
+            '{} - {} {}.'.format(*ingredient)) for ingredient in ingredients]
+        file = HttpResponse('Cписок покупок:\n' + '\n'.join(file_list),
+                            content_type='text/plain')
+        file['Content-Disposition'] = (f'attachment; filename={FILE_NAME}')
+        return file
