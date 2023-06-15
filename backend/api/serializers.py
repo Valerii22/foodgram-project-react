@@ -228,8 +228,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.filter(recipe=instance).delete()
         instance.tags.set(validated_data.pop('tags'))
         ingredients = validated_data.pop('ingredients')
-        if ingredients:
-            self.create_ingredients(instance, ingredients)
+        self.create_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
 
     class Meta:
