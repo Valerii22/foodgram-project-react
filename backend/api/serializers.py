@@ -215,9 +215,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.bulk_create(ingredient_liist)
 
     def create(self, validated_data):
+        author = self.context.get('request').user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(image=image, **validated_data)
+        recipe = Recipe.objects.create(autor=autor, **validated_data)
         recipe.tags.set(tags)
         self.create_ingredients(recipe, ingredients)
         return recipe
