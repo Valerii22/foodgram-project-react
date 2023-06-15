@@ -104,7 +104,7 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
+    id = serializers.ReadOnlyField(source='ingredient.pk')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
@@ -201,7 +201,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 'Нужно добавить хотя бы один ингредиент.'
             )
 
-        ingredients = [item['id'] for item in value]
+        ingredients = [item['pk'] for item in value]
         for ingredient in ingredients:
             if ingredients.count(ingredient) > 1:
                 raise exceptions.ValidationError(
@@ -216,7 +216,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients:
             ingredient_liist.append(
                 IngredientAmount(
-                    ingredient_id=ingredient_data.pop('id'),
+                    ingredient_id=ingredient_data.pop('pk'),
                     amount=ingredient_data.pop('amount'),
                     recipe=recipe,
                 )
