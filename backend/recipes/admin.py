@@ -11,12 +11,12 @@ class RecipeIngredientInstanceInline(admin.TabularInline):
 
 
 @admin.register(Recipe)
-class RecipesAdmin(admin.ModelAdmin):
+class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
     )
-    inlines = [IngredientAmountInstanceInline]
+    inlines = [RecipeIngredientInstanceInline]
     list_filter = ('name', )
 
 
