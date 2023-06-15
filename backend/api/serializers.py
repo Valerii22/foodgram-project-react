@@ -115,30 +115,17 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
-class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    amount = serializers.IntegerField(
-        validators=(
-            MinValueValidator(
-                1,
-                message='Нужно добавить один или более ингредиентов'
-            ),
-        )
-    )
-
-    class Meta:
-        model = Ingredient
-        fields = ('id', 'amount')
-
-
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    ingredients = RecipeIngredientsSerializer(
-        many=True, source='amount_recipe'
-    )
+    ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    
+    def get_ingredients(self, obj):
+        return obj.ingredients.values(
+            "id", "name", "measurement_unit", amount=F("recipe__amount")
+        )
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
@@ -178,7 +165,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True
     )
-    ingredients = CreateUpdateRecipeIngredientsSerializer(many=True)
+    ingredients = RecipeIngredientsSerializer(many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
         validators=(
