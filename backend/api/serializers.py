@@ -171,7 +171,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True
     )
-    ingredients = IngredientAmountSerializer((
+    ingredients = IngredientAmountSerializer(
         many=True,
         source='amount_recipe'
     )
