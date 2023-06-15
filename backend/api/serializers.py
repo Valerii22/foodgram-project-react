@@ -217,19 +217,19 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request', None)
         tags = validated_data.pop('tags')
-        ingrs = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.tags.set(tags)
-        self.create_ingredients(recipe, ingrs)
+        self.create_ingredients(recipe, ingredienrs)
         return recipe
 
     def update(self, instance, validated_data):
         instance.tags.clear()
         IngredientAmount.objects.filter(recipe=instance).delete()
         instance.tags.set(validated_data.pop('tags'))
-        ingrs = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredients')
         if ingrs:
-            self.create_ingredients(instance, ingrs)
+            self.create_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
 
     class Meta:
