@@ -157,15 +157,16 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_favorited',
         )
 
+
 class AddIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
-
     class Meta:
         model = IngredientAmount
         fields = ('id', 'amount')
         
+
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
