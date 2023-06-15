@@ -126,7 +126,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-
     def get_is_favorited(self, obj):
         user = self.context['request'].user
 
@@ -165,10 +164,10 @@ class AddIngredientSerializer(serializers.ModelSerializer):
         queryset=Ingredient.objects.all(),
         source='ingredient'
     )
-    amount = serializers.IntegerField(validators=[validate_amount])
+    amount = serializers.IntegerField()
 
     class Meta:
-        model = RecipeIngredient
+        model = IngredientAmount
         fields = ('id', 'amount')
 
 
@@ -220,8 +219,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients:
             ingredient_liist.append(
                 IngredientAmount(
-                    ingredient=ingredient['ingredient'],
-                    amount=ingredient['amount'],
+                    ingredient=ingredient_data['ingredient'],
+                    amount=ingredient_data['amount'],
                     recipe=recipe
                 )
             )
