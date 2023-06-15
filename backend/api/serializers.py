@@ -103,6 +103,13 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         return data
 
 
+class IngredientAmountSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = IngredientAmount
+        fields = ('id', 'amount')
+        
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
@@ -164,9 +171,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True
     )
-    ingredients = RecipeIngredientsSerializer(
+    ingredients = IngredientAmountSerializer((
         many=True,
-        source='IngredientAmount'
+        source='amount_recipe'
     )
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
