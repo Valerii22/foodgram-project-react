@@ -91,9 +91,9 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class CreateDeliteMixin:
 
     @staticmethod
-    def create_method(model, recipe_pk, request):
+    def create_method(model, pk, request):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=recipe_pk)
+        recipe = get_object_or_404(Recipe, pk=rpk)
         if model.objects.filter(recipe=recipe, user=user).exists():
             return Response(
                 {'errors': 'Уже добавлен'},
@@ -106,9 +106,9 @@ class CreateDeliteMixin:
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete_method(model, recipe_pk, request):
+    def delete_method(model, pk, request):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=recipe_pk)
+        recipe = get_object_or_404(Recipe, pk=pk)
         if not model.objects.filter(user=user, recipe=recipe).exists():
             return Response(
                 {'errors': 'Уже удален'},
