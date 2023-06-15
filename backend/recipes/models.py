@@ -101,10 +101,10 @@ class IngredientAmount(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь',
-                             related_name='cart',
+                             related_name='Shopping_cart',
                              on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, verbose_name='Список рецептов',
-                               related_name='cart',
+                               related_name='shopping_cart',
                                on_delete=models.CASCADE)
 
     class Meta:
