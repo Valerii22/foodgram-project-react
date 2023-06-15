@@ -93,7 +93,7 @@ class CreateDeliteMixin:
     @staticmethod
     def create_method(model, pk, request):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=rpk)
+        recipe = get_object_or_404(Recipe, pk=pk)
         if model.objects.filter(recipe=recipe, user=user).exists():
             return Response(
                 {'errors': 'Уже добавлен'},
