@@ -211,21 +211,20 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def create_ingredients(recipe, ingredients):
-        ingredient_liist = []
+        ingredient_list = []
         for ingredient_data in ingredients:
-            ingredient_liist.append(
+            ingredient_list.append(
                 IngredientAmount(
-                    ingredient_id=ingredient_data.pop('id'),
+                    ingredient=ingredient_data.pop('id'),
                     amount=ingredient_data.pop('amount'),
-                    recipe=recipe,
-                )
-            )
-        IngredientAmount.objects.bulk_create(ingredient_liist)
+                    recipe=recipe,))
+        IngredientAmount.objects.bulk_create(ingredient_list)
 
     def create(self, validated_data):
+        request = self.context.get('request', None)
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.tags.set(tags)
         self.create_ingredients(recipe, ingredients)
         return recipe
@@ -237,6 +236,14 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         self.create_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        serializer = RecipeSerializer(
+            instance,
+            context={'request': self.context.get('request')}
+        )
+
+        return serializer.data
 
     class Meta:
         model = Recipe
