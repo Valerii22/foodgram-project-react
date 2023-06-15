@@ -103,7 +103,7 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         return data
 
 
-class RecipeIngredientsSerializer(serializers.ModelSerializer):
+class IngredientAmount(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -118,13 +118,14 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    ingredients = serializers.SerializerMethodField(read_only=True)
+    ingredients = IngredientAmount(
+        read_only=True,
+        many=True,
+        source='recipe_ingredient'
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-    
-    def get_ingredients(self, obj):
-        queryset = IngredientAmount.objects.filter(recipe=obj)
-        return RecipeIngredientsSerializer(queryset, many=True).data
+
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
@@ -156,6 +157,19 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_in_shopping_cart',
             'is_favorited',
         )
+
+ 
+class AddIngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор добавления ингредиента в рецепте."""
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        source='ingredient'
+    )
+    amount = serializers.IntegerField(validators=[validate_amount])
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'amount')
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
@@ -206,9 +220,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients:
             ingredient_liist.append(
                 IngredientAmount(
-                    ingredient_id=ingredient_data.pop('pk'),
-                    amount=ingredient_data.pop('amount'),
-                    recipe=recipe,
+                    ingredient=ingredient['ingredient'],
+                    amount=ingredient['amount'],
+                    recipe=recipe
                 )
             )
         IngredientAmount.objects.bulk_create(ingredient_liist)
