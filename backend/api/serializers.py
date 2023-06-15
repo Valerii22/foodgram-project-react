@@ -5,7 +5,8 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from drf_extra_fields.fields import Base64ImageField
 
-from recipes.models import Ingredient, IngredientQuantity, Recipe, Tag
+from recipes.models import (Ingredient, IngredientQuantity, Recipe, Tag,
+                            Favorite, ShoppingCart)
 from users.models import Follow, User
 
 
@@ -62,18 +63,21 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'recipes_count'
         )
 
-    def get_recipes(self, obj):
-        limit = self.context['request'].query_params.get(
-            'recipes_limit', settings.COUNT_RECIPES
-        )
-        recipes = obj.recipe.all()[:int(limit)]
-        return ShortRecipeSerializer(recipes, many=True).data
-
-    def get_is_subscribed(self, obj):
+    def get_is_favorited(self, obj):
         user = self.context['request'].user
+
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj.id).exists()
+
+        return Favourite.objects.filter(user=user, recipe=obj).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context['request'].user
+
+        if user.is_anonymous:
+            return False
+
+        return ShoppingCart.objects.filter(user=user, recipe=obj).exists()
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
