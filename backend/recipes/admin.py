@@ -1,22 +1,22 @@
 from django.contrib import admin
 
 from recipes.models import (Recipe, Tag, Ingredient,
-                            RecipeIngredient, Favourite, ShoppingCart)
+                            IngredientAmount, Favourite, ShoppingCart)
 
 
-class RecipeIngredientInstanceInline(admin.TabularInline):
-    model = RecipeIngredient
+class IngredientAmountInstanceInline(admin.TabularInline):
+    model = IngredientAmount
     extra = 1
     min_num = 1
 
 
 @admin.register(Recipe)
-class RecipeAdmin(admin.ModelAdmin):
+class RecipesAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
     )
-    inlines = [RecipeIngredientInstanceInline]
+    inlines = [IngredientAmountInstanceInline]
     list_filter = ('name', )
 
 
