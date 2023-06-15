@@ -109,7 +109,8 @@ class IngredientAmountSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ('id', 'amount')
-        
+   
+
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
