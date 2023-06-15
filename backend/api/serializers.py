@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from drf_extra_fields.fields import Base64ImageField
 
-from recipes.models import (Ingredient, IngredientQuantity, Recipe, Tag,
+from recipes.models import (Ingredient, IngredientAmount, Recipe, Tag,
                             Favorite, ShoppingCart)
 from users.models import Follow, User
 
@@ -113,10 +113,10 @@ class GetIngredientSerializer(serializers.ModelSerializer):
         source='ingredient.measurement_unit')
 
     class Meta:
-        model = IngredientQuantity
+        model = IngredientAmount
         fields = ('id', 'name', 'measurement_unit', 'amount')
         validators = [
-            UniqueTogetherValidator(queryset=IngredientQuantity.objects.all(),
+            UniqueTogetherValidator(queryset=IngredientAmount.objects.all(),
                                     fields=['ingredient', 'recipe'])
         ]
 
@@ -168,7 +168,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return False
 
     def get_ingredients(self, obj):
-        ingredients = IngredientQuantity.objects.filter(recipe=obj)
+        ingredients = IngredientAmount.objects.filter(recipe=obj)
         return GetIngredientSerializer(ingredients, many=True).data
 
 
@@ -205,10 +205,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             instance.tags.set(tags_data)
         if 'ingredients' in self.validated_data:
             ingredients_data = validated_data.pop('ingredients')
-            quantity = IngredientQuantity.objects.filter(
+            quantity = IngredientAmount.objects.filter(
                 recipe_id=instance.id)
             quantity.delete()
-            self.create_update(ingredients_data, IngredientQuantity, instance)
+            self.create_update(ingredients_data, IngredientAmount, instance)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
@@ -216,7 +216,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         self.fields.pop('tags')
         represent = super().to_representation(instance)
         represent['ingredients'] = GetIngredientSerializer(
-            IngredientQuantity.objects.filter(recipe=instance),
+            IngredientAmount.objects.filter(recipe=instance),
             many=True).data
         represent['tags'] = TagSerializer(instance.tags, many=True).data
         return represent
