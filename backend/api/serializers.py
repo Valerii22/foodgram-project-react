@@ -77,7 +77,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(user=user, author=obj.id).exists()
 
     def get_recipes_count(self, obj):
-        return obj.recipe.count()
+        return obj.recipes.count()
 
 
 class SubscriptionCreateSerializer(serializers.ModelSerializer):
@@ -103,14 +103,6 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         return data
 
 
-class IngredientAmountSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.IntegerField()
-
-    class Meta:
-        model = IngredientAmount
-        fields = ('id', 'amount')
-   
-
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
@@ -124,7 +116,7 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    author = CurrentUserSerializer(required=False)
+    author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     ingredients = RecipeIngredientsSerializer(
         source='anount_recipe',
@@ -167,14 +159,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    author = CurrentUserSerializer(required=False)
+    author = CurrentUserSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
     )
-    ingredients = IngredientAmountSerializer(
+    ingredients = RecipeIngredientsSerializer(
         many=True,
-        source='amount_recipe'
+        source='IngredientAmount'
     )
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
@@ -211,14 +203,16 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def create_ingredients(recipe, ingredients):
-        ingredient_list = []
+        ingredient_liist = []
         for ingredient_data in ingredients:
-            ingredient_list.append(
+            ingredient_liist.append(
                 IngredientAmount(
-                    ingredient=ingredient_data.pop('id'),
+                    ingredient_id=ingredient_data.pop('id'),
                     amount=ingredient_data.pop('amount'),
-                    recipe=recipe,))
-        IngredientAmount.objects.bulk_create(ingredient_list)
+                    recipe=recipe,
+                )
+            )
+        IngredientAmount.objects.bulk_create(ingredient_liist)
 
     def create(self, validated_data):
         request = self.context.get('request', None)
@@ -236,14 +230,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         self.create_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
-
-    def to_representation(self, instance):
-        serializer = RecipeSerializer(
-            instance,
-            context={'request': self.context.get('request')}
-        )
-
-        return serializer.data
 
     class Meta:
         model = Recipe
