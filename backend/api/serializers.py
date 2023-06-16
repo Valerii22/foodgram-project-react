@@ -196,7 +196,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                     f'Добавьте количество ингредиента {ingredient}'
                 )
         ingredient_list = [
-            ingredient['ingredient'].get('id') for ingredient in value
+            ingredient['ingredients'].get('id') for ingredient in value
         ]
         unique_ingredient_list = set(ingredient_list)
         if len(ingredient_list) != len(unique_ingredient_list):
