@@ -105,7 +105,8 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all(),
+                                            source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
@@ -196,7 +197,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                     f'Добавьте количество ингредиента {ingredient}'
                 )
         ingredient_list = [
-            ingredient['ingredients'].get('id') for ingredient in value
+            ingredient['ingredient'].get('id') for ingredient in value
         ]
         unique_ingredient_list = set(ingredient_list)
         if len(ingredient_list) != len(unique_ingredient_list):
