@@ -188,17 +188,20 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, value):
         if not value:
-            raise exceptions.ValidationError(
-                'Нужно добавить хотя бы один ингредиент.'
-            )
-
-        ingredients = [item['id'] for item in value]
-        for ingredient in ingredients:
-            if ingredients.count(ingredient) > 1:
-                raise exceptions.ValidationError(
-                    'У рецепта не может быть два одинаковых ингредиента.'
+            raise ValidationError('Добавьте ингредиенты')
+        for ingredient in value:
+            if ingredient.get('amount') <= 0:
+                raise ValidationError(
+                    f'Добавьте количество ингредиента {ingredient}'
                 )
-
+        ingredient_list = [
+            ingredient['ingredient'].get('id') for ingredient in value
+        ]
+        unique_ingredient_list = set(ingredient_list)
+        if len(ingredient_list) != len(unique_ingredient_list):
+            raise serializers.ValidationError(
+                'Ингредиенты должны быть уникальны'
+            )
         return value
 
     def create(self, validated_data):
