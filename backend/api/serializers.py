@@ -161,7 +161,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    author = CurrentUserSerializer(read_only=True)
+    author = CurrentUserSerializer(read_only=True, null=False)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
