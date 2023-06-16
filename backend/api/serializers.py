@@ -242,7 +242,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.bulk_create(objs)
         return instance
 
-
     class Meta:
         model = Recipe
         fields = ('author', 'ingredients', 'tags', 'cooking_time', 'image')
