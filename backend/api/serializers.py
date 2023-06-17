@@ -33,6 +33,13 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
+class ShortRecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+ 
+
 class SubscriptionSerializer(serializers.ModelSerializer):
     """Сериализатор для подписок"""
 
