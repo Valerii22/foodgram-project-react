@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -145,26 +144,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         ingredients = RecipeIngredient.objects.filter(
-            recipe__shopping__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(total=Sum('amount'))
-        buy_list_count = 0
-        buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
-        for item in ingredients:
-            buy_list_count += 1
-            buy_list_text += (
-                f'{buy_list_count})'
-                f'{item["name"]}, {item["total"]}'
-                f'{item["measurement_unit"]}\n'
-            )
-        response = HttpResponse(buy_list_text, content_type="text/plain")
-        response['Content-Disposition'] = (
-            'attachment; filename=shopping-list.txt'
+            recipe__shopping__user=request.user).values(
+                'ingredient__name', 'ingredient__measurement_unit').annotate(
+                    amount=Sum('total_amount'))
+        text = ''
+        for ingredient in ingredients:
+            text += (f'•  {ingredient["ingredient__name"]}'
+                    f'({ingredient["ingredient__measurement_unit"]})'
+                    f'— {ingredient["total_amount"]}\n')
+        headers = {
+            'Content-Disposition': 'attachment; filename=cart.txt'}
+        return HttpResponse(
+            text, content_type='text/plain; charset=UTF-8', headers=headers
         )
-
-        return response
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
