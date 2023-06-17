@@ -76,6 +76,3 @@ sudo docker-compose exec backend python manage.py createsuperuser
 ```
 sudo docker-compose exec backend python manage.py load_data_ingredients
 ```
-```
-sudo docker-compose exec backend python manage.py load_data_tags
-```
