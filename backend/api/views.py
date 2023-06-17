@@ -23,7 +23,7 @@ class CurrentUserViewSet(UserViewSet):
     '''Вьюсет для пользователей и подписок'''
 
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = CurrentUserSerializer
     pagination_class = CustomPagination
 
     @action(detail=False,
