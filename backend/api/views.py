@@ -131,7 +131,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def delete_method(self, model, user, pk):
         obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
-            obj.delete()
+                obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'errors': 'Рецепта нет в списке'},
                         status=status.HTTP_400_BAD_REQUEST)
