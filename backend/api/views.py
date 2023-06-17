@@ -26,24 +26,6 @@ class CurrentUserViewSet(UserViewSet):
     pagination_class = CustomPagination
 
     @action(
-        methods=['get'], detail=False,
-        serializer_class=SubscriptionSerializer,
-        permission_classes=(IsAuthenticated, )
-    )
-    def subscriptions(self, request):
-        subscriptions = User.objects.filter(
-            following__user=request.user
-        )
-        paginated_subscriptions = self.paginate_queryset(
-            subscriptions
-        )
-        serialized_subscriptions = SubscriptionSerializer(
-            paginated_subscriptions,
-            many=True, context={'request': request}
-        ).data
-        return self.get_paginated_response(serialized_subscriptions)
-
-    @action(
         methods=['post', 'delete'], detail=True,
         serializer_class=SubscriptionSerializer,
         permission_classes=(IsAuthenticated,)
