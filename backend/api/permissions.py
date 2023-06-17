@@ -8,7 +8,7 @@ class IsAdminOrReadOnly(BasePermission):
                 or request.user.is_staff)
 
 
-class IsAuthorOrAdminPermission(BasePermission):
+class IsAuthorOrReadOnly(BasePermission):
     message = (
         'Нет доступа')
 
