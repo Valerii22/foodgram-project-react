@@ -1,7 +1,6 @@
-from django.conf import settings
 from django.db.transaction import atomic
+from djoser.serializers import UserSerializer
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
@@ -40,7 +39,7 @@ class ShortRecipeSerializer(ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class SubscribeSerializer(MyUserSerializer):
+class SubscribeSerializer(CurrentUserSerializer):
     '''Сериализатор подписoк'''
 
     recipes_count = serializers.IntegerField(source='recipes.count',
