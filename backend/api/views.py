@@ -10,8 +10,9 @@ from .filters import NameSearchFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, TagSerializer,
-                          SubscriptionSerializer, RecipeCreateSerializer,
+                          CurrentUserSerializer, RecipeCreateSerializer,
                           RecipeGetSerializer, RecipeShowSerializer,
+                          UserSerializer
                           )
 from .utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
@@ -19,57 +20,48 @@ from users.models import Follow, User
 
 
 class CurrentUserViewSet(UserViewSet):
-    """Пользовательский вьюсет"""
+    '''Вьюсет для пользователей и подписок'''
 
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     pagination_class = CustomPagination
 
-    @action(
-        methods=['get'], detail=False,
-        serializer_class=SubscriptionSerializer,
-        permission_classes=(IsAuthenticated, )
-    )
+    @action(detail=False,
+            methods=['GET'],
+            permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
-        subscriptions = User.objects.filter(
-            following__user=request.user
-        )
-        paginated_subscriptions = self.paginate_queryset(
-            subscriptions
-        )
-        serialized_subscriptions = SubscriptionSerializer(
-            paginated_subscriptions,
-            many=True, context={'request': request}
-        ).data
-        return self.get_paginated_response(serialized_subscriptions)
+        user = request.user
+        queryset = User.objects.filter(following__user=user)
+        page = self.paginate_queryset(queryset)
+        serializer = CurrentUserSerializer(page,
+                                      many=True,
+                                      context={'request': request})
+        return self.get_paginated_response(serializer.data)
 
-    @action(
-        methods=['post', 'delete'], detail=True,
-        serializer_class=SubscriptionSerializer,
-        permission_classes=(IsAuthenticated,)
-    )
-    def subscribe(self, request, id=None):
+    @action(detail=True,
+            methods=['POST', 'DELETE'],
+            permission_classes=[IsAuthenticated])
+    def subscribe(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
 
-        follow_search = Follow.objects.filter(user=user, author=author)
-
         if request.method == 'POST':
             if user.id == author.id:
-                return Response({'detail': 'Подписаться на себя запрещено'},
+                return Response({'detail': 'Нельзя подписаться на себя!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            if follow_search.exists():
-                return Response(
-                    {'detail': 'Вы уже подписаны на этого пользователя'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            if Follow.objects.filter(author=author, user=user).exists():
+                return Response({'detail': 'Вы уже подписаны!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             Follow.objects.create(user=user, author=author)
-            serializer = self.get_serializer(author)
+            serializer = CurrentUserSerializer(author,
+                                          context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if not follow_search.exists():
-            return Response(
-                {'detail': 'Вы не подписаны на этого пользователя'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        Follow.objects.filter(user=user, author=author).delete()
+
+        if not Follow.objects.filter(user=user, author=author).exists():
+            return Response({'errors': 'Сначала нужно подписаться!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        subscription = get_object_or_404(Follow, user=user, author=author)
+        subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
