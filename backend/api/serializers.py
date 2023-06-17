@@ -64,7 +64,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         """Статус подписки на автора"""
         user = self.context.get('request').user
         return Follow.objects.filter(
-            author=obj.author, user=user).exists()
+            author=obj.id, user=user).exists()
 
     def get_recipes(self, obj):
         """Получение списка рецептов автора"""
