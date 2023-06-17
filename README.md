@@ -1,4 +1,3 @@
-Созданиение рецепта проходит только через админку, так же не показываются ингредиенты и не получается скачать список покупок, оставил дебаг включенным, уже просто не у кого даже просить помощи
 ## Workflow status
 
 [![foodgram](https://github.com/Valerii22/foodgram-project-react/actions/workflows/foodgram.yaml/badge.svg)](https://github.com/Valerii22/foodgram-project-react/actions/workflows/foodgram.yaml)
