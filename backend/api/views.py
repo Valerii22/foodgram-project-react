@@ -18,49 +18,58 @@ from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
 
 
-class MyUserViewSet(UserViewSet):
-    '''Вьюсет для пользователей и подписок'''
+class CurrentUserViewSet(UserViewSet):
+    """Пользовательский вьюсет"""
 
-    queryset = User.objects.all()
-    serializer_class = MyUserSerializer
     pagination_class = CustomPagination
 
-    @action(detail=False,
-            methods=['GET'],
-            permission_classes=[IsAuthenticated])
+    @action(
+        methods=['get'], detail=False,
+        serializer_class=SubscriptionSerializer,
+        permission_classes=(IsAuthenticated, )
+    )
     def subscriptions(self, request):
-        user = request.user
-        queryset = User.objects.filter(following__user=user)
-        page = self.paginate_queryset(queryset)
-        serializer = FollowSerializer(page,
-                                      many=True,
-                                      context={'request': request})
-        return self.get_paginated_response(serializer.data)
+        subscriptions = User.objects.filter(
+            following__user=request.user
+        )
+        paginated_subscriptions = self.paginate_queryset(
+            subscriptions
+        )
+        serialized_subscriptions = SubscriptionSerializer(
+            paginated_subscriptions,
+            many=True, context={'request': request}
+        ).data
+        return self.get_paginated_response(serialized_subscriptions)
 
-    @action(detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=[IsAuthenticated])
-    def subscribe(self, request, id):
+    @action(
+        methods=['post', 'delete'], detail=True,
+        serializer_class=SubscriptionSerializer,
+        permission_classes=(IsAuthenticated,)
+    )
+    def subscribe(self, request, id=None):
         user = request.user
-        author = get_object_or_404(User, id=id)
+        author = get_object_or_404(User, pk=id)
+
+        follow_search = Follow.objects.filter(user=user, author=author)
 
         if request.method == 'POST':
-            if user.id == author.id:
-                return Response({'detail': 'Нельзя подписаться на себя!'},
+            if user == author:
+                return Response({'detail': 'Подписаться на себя запрещено'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            if Follow.objects.filter(author=author, user=user).exists():
-                return Response({'detail': 'Вы уже подписаны!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            if follow_search.exists():
+                return Response(
+                    {'detail': 'Вы уже подписаны на этого пользователя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             Follow.objects.create(user=user, author=author)
-            serializer = FollowSerializer(author,
-                                          context={'request': request})
+            serializer = self.get_serializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        if not Follow.objects.filter(user=user, author=author).exists():
-            return Response({'errors': 'Сначала нужно подписаться!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        subscription = get_object_or_404(Follow, user=user, author=author)
-        subscription.delete()
+        if not follow_search.exists():
+            return Response(
+                {'detail': 'Вы не подписаны на этого пользователя'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        Follow.objects.filter(user=user, author=author).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
