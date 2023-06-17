@@ -1,5 +1,4 @@
 ## Workflow status
-
 [![foodgram](https://github.com/Valerii22/foodgram-project-react/actions/workflows/foodgram.yaml/badge.svg)](https://github.com/Valerii22/foodgram-project-react/actions/workflows/foodgram.yaml)
 
 ## Ссылка на развёрнутый проект
