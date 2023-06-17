@@ -103,23 +103,6 @@ class RecipeShowSerializer(ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class FollowSerializer(MyUserSerializer):
-    '''Сериализатор подписoк'''
-
-    recipes_count = serializers.IntegerField(source='recipes.count',
-                                             read_only=True)
-    recipes = RecipeShowSerializer(many=True, read_only=True)
-    is_subscribed = serializers.BooleanField(default=True)
-
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'username', 'first_name',
-                  'last_name', 'recipes_count', 'recipes',
-                  'is_subscribed')
-        read_only_fields = ('email', 'username',
-                            'first_name', 'last_name')
-
-
 class TagSerializer(serializers.ModelSerializer):
     '''Сериализатор тегов'''
 
