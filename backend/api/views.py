@@ -1,8 +1,6 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from django.db.models import Sum
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
@@ -15,6 +13,7 @@ from .serializers import (IngredientSerializer, TagSerializer,
                           SubscriptionSerializer, RecipeCreateSerializer,
                           RecipeGetSerializer, RecipeShowSerializer,
                           RecipeIngredient)
+from .utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
 
@@ -140,24 +139,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=('get',),
-        permission_classes=(IsAuthenticated,)
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        ingredients = RecipeIngredient.objects.filter(
-            recipe__shopping__user=request.user).values(
-                'ingredient__name', 'ingredient__measurement_unit').annotate(
-                    amount=Sum('total_amount'))
-        text = ''
-        for ingredient in ingredients:
-            text += (f'•  {ingredient["ingredient__name"]}'
-                     f'({ingredient["ingredient__measurement_unit"]})'
-                     f'— {ingredient["total_amount"]}\n')
-        headers = {
-            'Content-Disposition': 'attachment; filename=cart.txt'}
-        return HttpResponse(
-            text, content_type='text/plain; charset=UTF-8', headers=headers
-        )
+        return download_shopping_cart(self, request)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
