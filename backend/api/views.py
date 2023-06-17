@@ -11,7 +11,7 @@ from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, TagSerializer,
                           CurrentUserSerializer, RecipeCreateSerializer,
-                          RecipeGetSerializer, RecipeShowSerializer,
+                          RecipeGetSerializer, ShortRecipeSerializer,
                           UserSerializer
                           )
 from .utils import download_shopping_cart
