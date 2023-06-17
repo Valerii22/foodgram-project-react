@@ -33,9 +33,11 @@ class CurrentUserViewSet(UserViewSet):
         user = request.user
         queryset = User.objects.filter(following__user=user)
         page = self.paginate_queryset(queryset)
-        serializer = CurrentUserSerializer(page,
+        serializer = CurrentUserSerializer(
+                                      page,
                                       many=True,
-                                      context={'request': request})
+                                      context={'request': request}
+                                     )
         return self.get_paginated_response(serializer.data)
 
     @action(detail=True,
@@ -53,8 +55,10 @@ class CurrentUserViewSet(UserViewSet):
                 return Response({'detail': 'Вы уже подписаны!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             Follow.objects.create(user=user, author=author)
-            serializer = CurrentUserSerializer(author,
-                                          context={'request': request})
+            serializer = CurrentUserSerializer(
+                                          author,
+                                          context={'request': request}
+                                         )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if not Follow.objects.filter(user=user, author=author).exists():
