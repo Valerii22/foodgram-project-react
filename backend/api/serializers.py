@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.transaction import atomic
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
@@ -11,52 +12,74 @@ from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
 from users.models import Follow, User
 
 
-class CurrentUserSerializer(UserSerializer):
-    '''Сериализатор пользователя'''
+class CurrentUserSerializer(serializers.ModelSerializer):
 
-    is_subscribed = SerializerMethodField(read_only=True)
+    password = serializers.CharField(write_only=True)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name',
-                  'last_name', 'is_subscribed')
+        fields = (
+            'email', 'id', 'username', 'first_name',
+            'last_name', 'password', 'is_subscribed'
+        )
+        write_only_fields = ('password',)
 
     def get_is_subscribed(self, obj):
+        """Статус подписки на автора."""
+        user_id = self.context.get('request').user.id
+        return Subscription.objects.filter(
+            author=obj.id, user=user_id).exists()
+
+    def create(self, validated_data):
+        """Создание нового пользователя."""
+        user = User.objects.create(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.ReadOnlyField(source='author.id')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Follow
+        fields = (
+            'email', 'id', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count'
+        )
+
+    def get_is_subscribed(self, obj):
+        """Статус подписки на автора"""
         user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+        return Subscription.objects.filter(
+            author=obj.author, user=user).exists()
+
+    def get_recipes(self, obj):
+        """Получение списка рецептов автора"""
+        limit = self.context['request'].query_params.get(
+            'recipes_limit', settings.COUNT_RECIPES
+        )
+        recipe_obj = obj.author.recipes.all()
+        if limit:
+            recipe_obj = recipe_obj[:int(limit)]
+        serializer = ShortRecipeSerializer(recipe_obj, many=True)
+        return serializer.data
 
 
 class ShortRecipeSerializer(ModelSerializer):
-    '''
-    Дополнительный сериализатор для отображения рецептов
-    в подписках, избранном и покупках
-    '''
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
-
-
-class SubscribeSerializer(CurrentUserSerializer):
-    '''Сериализатор подписoк'''
-
-    recipes_count = serializers.IntegerField(source='recipes.count',
-                                             read_only=True)
-    recipes = ShortRecipeSerializer(many=True, read_only=True)
-    is_subscribed = serializers.BooleanField(default=True)
-
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'username', 'first_name',
-                  'last_name', 'recipes_count', 'recipes',
-                  'is_subscribed')
-        read_only_fields = ('email', 'username',
-                            'first_name', 'last_name')
-
-
-class RecipeShowSerializer(ModelSerializer):
     '''
     Дополнительный сериализатор для отображения рецептов
     в подписках, избранном и покупках
