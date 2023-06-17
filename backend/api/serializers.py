@@ -71,7 +71,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         limit = self.context['request'].query_params.get(
             'recipes_limit', settings.COUNT_RECIPES
         )
-        recipe_obj = obj.author.recipes.all()
+        recipe_obj = obj.recipes.all()
         if limit:
             recipe_obj = recipe_obj[:int(limit)]
         serializer = ShortRecipeSerializer(recipe_obj, many=True)
