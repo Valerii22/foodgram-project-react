@@ -6,14 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
-from api.filters import NameSearchFilter, RecipeFilter
-from api.pagination import CustomPagination
-from permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers import (FollowSerializer, IngredientSerializer,
+from .filters import NameSearchFilter, RecipeFilter
+from .pagination import CustomPagination
+from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from .serializers import (FollowSerializer, IngredientSerializer,
                              MyUserSerializer, RecipeCreateSerializer,
                              RecipeGetSerializer, RecipeShowSerializer,
                              TagSerializer)
-from api.utils import download_shopping_cart
+from .utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
 
