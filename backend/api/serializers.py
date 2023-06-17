@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db.transaction import atomic
-from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
@@ -28,7 +27,7 @@ class CurrentUserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         """Статус подписки на автора."""
         user_id = self.context.get('request').user.id
-        return Subscription.objects.filter(
+        return Follow.objects.filter(
             author=obj.id, user=user_id).exists()
 
     def create(self, validated_data):
@@ -64,7 +63,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         """Статус подписки на автора"""
         user = self.context.get('request').user
-        return Subscription.objects.filter(
+        return Follow.objects.filter(
             author=obj.author, user=user).exists()
 
     def get_recipes(self, obj):
