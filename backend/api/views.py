@@ -48,12 +48,12 @@ class CurrentUserViewSet(UserViewSet):
     )
     def subscribe(self, request, id=None):
         user = request.user
-        author = get_object_or_404(User, pk=id)
+        author = get_object_or_404(User, id=id)
 
         follow_search = Follow.objects.filter(user=user, author=author)
 
         if request.method == 'POST':
-            if user == author:
+            if user.id == author.id:
                 return Response({'detail': 'Подписаться на себя запрещено'},
                                 status=status.HTTP_400_BAD_REQUEST)
             if follow_search.exists():
