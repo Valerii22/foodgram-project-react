@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -150,8 +151,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         text = ''
         for ingredient in ingredients:
             text += (f'•  {ingredient["ingredient__name"]}'
-                    f'({ingredient["ingredient__measurement_unit"]})'
-                    f'— {ingredient["total_amount"]}\n')
+                     f'({ingredient["ingredient__measurement_unit"]})'
+                     f'— {ingredient["total_amount"]}\n')
         headers = {
             'Content-Disposition': 'attachment; filename=cart.txt'}
         return HttpResponse(
