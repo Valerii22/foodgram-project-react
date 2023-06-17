@@ -12,7 +12,7 @@ from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, TagSerializer,
                           CurrentUserSerializer, RecipeCreateSerializer,
                           RecipeGetSerializer, ShortRecipeSerializer,
-                          UserSerializer
+                          SubscribeSerializer
                           )
 from .utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
@@ -33,7 +33,7 @@ class CurrentUserViewSet(UserViewSet):
         user = request.user
         queryset = User.objects.filter(following__user=user)
         page = self.paginate_queryset(queryset)
-        serializer = CurrentUserSerializer(
+        serializer = SubscribeSerializer(
             page,
             many=True,
             context={'request': request}
@@ -55,7 +55,7 @@ class CurrentUserViewSet(UserViewSet):
                 return Response({'detail': 'Вы уже подписаны!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             Follow.objects.create(user=user, author=author)
-            serializer = CurrentUserSerializer(
+            serializer = SubscribeSerializer(
                 author,
                 context={'request': request}
             )
