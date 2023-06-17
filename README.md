@@ -74,5 +74,5 @@ sudo docker-compose exec backend python manage.py createsuperuser
 Заполнить БД ингредиентами и тегами:
 
 ```
-sudo docker-compose exec backend python manage.py load_data_ingredients
+sudo docker-compose exec backend python manage.py load_ingredients_data
 ```
