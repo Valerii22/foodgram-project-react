@@ -73,7 +73,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         recipes = obj.recipes.all()
         if recipes_limit:
             recipes = obj.recipes.all()[:int(recipes_limit)]
-        serializer = ShortRecipeSerializer(recipe_obj, many=True)
+        serializer = ShortRecipeSerializer(recipe, many=True)
         return serializer.data
 
 
