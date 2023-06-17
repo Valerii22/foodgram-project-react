@@ -136,7 +136,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response({'errors': 'Рецепта нет в списке'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-   @action(
+    @action(
         detail=False,
         methods=('get',),
         permission_classes=(IsAuthenticated,)
