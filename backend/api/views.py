@@ -10,9 +10,9 @@ from .filters import NameSearchFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (FollowSerializer, IngredientSerializer,
-                             MyUserSerializer, RecipeCreateSerializer,
-                             RecipeGetSerializer, RecipeShowSerializer,
-                             TagSerializer)
+                          MyUserSerializer, RecipeCreateSerializer,
+                          RecipeGetSerializer, RecipeShowSerializer,
+                          TagSerializer)
 from .utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
