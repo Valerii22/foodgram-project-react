@@ -142,7 +142,6 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             return self.create_method(ShoppingCart, request.user, pk)
         return self.delete_method(ShoppingCart, request.user, pk)
 
-
     @action(
         detail=False,
         methods=['get'],
