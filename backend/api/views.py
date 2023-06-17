@@ -9,8 +9,8 @@ from rest_framework.response import Response
 from .filters import NameSearchFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .serializers import (FollowSerializer, IngredientSerializer,
-                          MyUserSerializer, RecipeCreateSerializer,
+from .serializers import (SubscriptionCreateSerializer, IngredientSerializer,
+                          SubscriptionSerializer, RecipeCreateSerializer,
                           RecipeGetSerializer, RecipeShowSerializer,
                           TagSerializer)
 from .utils import download_shopping_cart
