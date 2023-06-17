@@ -66,7 +66,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(
             author=obj.id, user=user).exists()
 
-   def get_recipes(self, obj):
+    def get_recipes(self, obj):
         limit = self.context['request'].query_params.get(
             'recipes_limit', settings.COUNT_RECIPES
         )
