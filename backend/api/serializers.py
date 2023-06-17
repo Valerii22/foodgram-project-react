@@ -1,6 +1,7 @@
+from django.conf import settings
 from django.db.transaction import atomic
-from djoser.serializers import UserSerializer
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
@@ -141,7 +142,7 @@ class RecipeGetSerializer(ModelSerializer):
     '''Сериализатор получения рецепта'''
 
     tags = TagSerializer(many=True, read_only=True)
-    author = MyUserSerializer(read_only=True)
+    author = CurrentUserSerializer(read_only=True)
     ingredients = IngredientRecipeCreationSerializer(
         source='recipeingredient', many=True)
     image = Base64ImageField()
@@ -172,7 +173,7 @@ class RecipeCreateSerializer(ModelSerializer):
 
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
-    author = MyUserSerializer(read_only=True)
+    author = CurrentUserSerializer(read_only=True)
     ingredients = IngredientRecipeCreationSerializer(many=True)
     image = Base64ImageField()
 
