@@ -24,18 +24,19 @@ class CurrentUserViewSet(UserViewSet):
 
     queryset = User.objects.all()
     serializer_class = CurrentUserSerializer
-    pagination_class = CustomPagination
 
     @action(detail=False,
             methods=['GET'],
             permission_classes=[IsAuthenticated],
             pagination_class=CustomPagination)
     def subscriptions(self, request):
-        queryset = User.objects.filter(following__user=request.user)
-        page = self.paginate_queryset(queryset)
-        serializer = SubscribeSerializer(page,
-                                         many=True,
-                                         context={'request': request})
+        """Список на кого подписан пользователь"""
+        user = request.user
+        queryset = user.follower.all()
+        pages = self.paginate_queryset(queryset)
+        serializer = SubscribeSerializer(
+            pages, many=True, context={'request': request}
+        )
         return self.get_paginated_response(serializer.data)
 
     @action(detail=True,
