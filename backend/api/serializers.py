@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -75,6 +76,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         if limit:
             recipe_obj = recipe_obj[:int(limit)]
         serializer = ShortRecipeSerializer(recipe_obj, many=True)
+        return serializer.data
 
 
 class ShortRecipeSerializer(ModelSerializer):
