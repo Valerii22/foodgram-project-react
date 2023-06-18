@@ -40,8 +40,8 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-      
-      
+ 
+ 
 class ShortRecipeSerializer(ModelSerializer):
     '''
     Дополнительный сериализатор для отображения рецептов
@@ -70,7 +70,7 @@ class SubscribeSerializer(CurrentUserSerializer):
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
-      
+
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
