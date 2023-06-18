@@ -80,7 +80,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
+class RecipeViewSet(viewsets.ModelViewSet):
     '''Вьюсет рецептов'''
 
     queryset = Recipe.objects.all()
@@ -106,7 +106,7 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     def favorite(self, request, pk=None):
         if request.method == 'POST':
             return self.create_method(Favourite, request.user, pk)
-        return self.delete_method(Favourite, request.user, *args, pk)
+        return self.delete_method(Favourite, request.user, pk)
 
     @action(detail=True,
             methods=['POST', 'DELETE'],
