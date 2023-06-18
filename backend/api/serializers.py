@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -66,14 +67,14 @@ class SubscribeSerializer(serializers.ModelSerializer):
             author=obj.id, user=user).exists()
 
     def get_recipes(self, obj):
-        request = self.context.get('request')
-        queryset = Recipe.objects.filter(author=obj)
-        recipes_limit = request.query_params.get('recipes_limit')
-        if recipes_limit and recipes_limit.isdigit():
-            queryset = queryset[:int(recipes_limit)]
-        serializer = ShortRecipeSerializer(
-            queryset, many=True
+        """Получение списка рецептов автора"""
+        limit = self.context['request'].query_params.get(
+            'recipes_limit', settings.COUNT_RECIPES
         )
+        recipe_obj = obj.recipes.all()
+        if limit:
+            recipe_obj = recipe_obj[:int(limit)]
+        serializer = ShortRecipeSerializer(recipe_obj, many=True)
         return serializer.data
 
 
