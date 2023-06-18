@@ -7,7 +7,7 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import NameSearchFilter, RecipeFilter
-from .pagination import CustomPagination
+from .pagination import CustomPagination, CustomSubscribePagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, TagSerializer,
                           CurrentUserSerializer, RecipeCreateSerializer,
@@ -28,7 +28,8 @@ class CurrentUserViewSet(UserViewSet):
 
     @action(detail=False,
             methods=['GET'],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],
+            pagination_class = CustomSubscribePagination)
     def subscriptions(self, request):
         user = request.user
         queryset = User.objects.filter(following__user=user)
