@@ -60,6 +60,7 @@ class SubscribeSerializer(CurrentUserSerializer):
                                               read_only=True)
     recipes = ShortRecipeSerializer(many=True, read_only=True)
     is_subscribed = serializers.BooleanField(default=True)
+
     class Meta:
         model = User
         fields = ('id', 'email', 'username', 'first_name',
