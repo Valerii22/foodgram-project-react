@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -43,7 +42,7 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         return user
 
 
-class SubscribeSerializer(MyUserSerializer):
+class SubscribeSerializer(CurrentUserSerializer):
     '''Сериализатор подписoк'''
 
     recipes_count = serializers.IntegerField(source='recipes.count',
