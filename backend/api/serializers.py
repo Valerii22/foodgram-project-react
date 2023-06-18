@@ -40,8 +40,8 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
- 
- 
+
+
 class ShortRecipeSerializer(ModelSerializer):
     '''
     Дополнительный сериализатор для отображения рецептов
