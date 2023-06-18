@@ -67,14 +67,14 @@ class SubscribeSerializer(serializers.ModelSerializer):
             author=obj.id, user=user).exists()
 
     def get_recipes(self, obj):
-        """Получение списка рецептов автора"""
-        limit = self.context['request'].query_params.get(
-            'recipes_limit', settings.COUNT_RECIPES
+        request = self.context.get('request')
+        queryset = Recipe.objects.filter(author=obj)
+        recipes_limit = request.query_params.get('recipes_limit')
+        if recipes_limit and recipes_limit.isdigit():
+            queryset = queryset[:int(recipes_limit)]
+        serializer = ShortRecipeSerializer(
+            queryset, many=True
         )
-        recipe_obj = obj.recipes.all()
-        if limit:
-            recipe_obj = recipe_obj[:int(limit)]
-        serializer = ShortRecipeSerializer(recipe_obj, many=True)
         return serializer.data
 
 
