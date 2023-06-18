@@ -31,10 +31,12 @@ class CurrentUserViewSet(UserViewSet):
             pagination_class=CustomPagination)
     def subscriptions(self, request):
         user = request.user
-        queryset = user.follower.all()
-        pages = self.paginate_queryset(queryset)
+        queryset = User.objects.filter(following__user=user)
+        page = self.paginate_queryset(queryset)
         serializer = SubscribeSerializer(
-            pages, many=True, context={'request': request}
+            page,
+            many=True,
+            context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
 
