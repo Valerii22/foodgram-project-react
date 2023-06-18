@@ -127,16 +127,16 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(Favourite, request.user, pk)
-        return self.delete_method(Favourite, request.user, pk)
+            return self.create_method(Favourite, request.user, *args, **kwargs)
+        return self.delete_method(Favourite, request.user, *args, **kwargs)
 
     @action(detail=True,
             methods=['POST', 'DELETE'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(ShoppingCart, request.user, pk)
-        return self.delete_method(ShoppingCart, request.user, pk)
+            return self.create_method(ShoppingCart, request.user, *args, **kwargs)
+        return self.delete_method(ShoppingCart, request.user, *args, **kwargs)
 
     @action(
         detail=False,
