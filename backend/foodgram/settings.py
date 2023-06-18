@@ -10,7 +10,7 @@ TEMPLATES_DIR = BASE_DIR / 'templates'
 
 SECRET_KEY = os.getenv('TOKEN', 'default-value')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
