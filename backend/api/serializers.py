@@ -58,7 +58,7 @@ class SubscribeSerializer(CurrentUserSerializer):
 
     recipes_count = serializers.ReadOnlyField(source='author.recipes.count',
                                               read_only=True)
-    recipes = ShortRecipeSerializer(many=True, read_only=True)
+    recipes = SerializerMethodField()
     is_subscribed = serializers.BooleanField(default=True)
 
     class Meta:
@@ -68,6 +68,15 @@ class SubscribeSerializer(CurrentUserSerializer):
                   'is_subscribed')
         read_only_fields = ('email', 'username',
                             'first_name', 'last_name')
+        
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        recipes = obj.recipes.all()
+        if limit:
+            recipes = recipes[: int(limit)]
+        serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
+        return serializer.data
 
 
 class TagSerializer(serializers.ModelSerializer):
