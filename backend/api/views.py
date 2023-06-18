@@ -79,28 +79,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('^name',)
     pagination_class = None
 
-    
-class CreateDeliteMixin:
-  
-    @staticmethod
-    def create_method(self, model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': 'Рецепт уже в списке'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        recipe = get_object_or_404(Recipe, id=pk)
-        model.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-      
-    @staticmethod
-    def delete_method(self, model, user, pk):
-        obj = model.objects.filter(user=user, recipe__id=pk)
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'errors': 'Рецепта нет в списке'},
-                        status=status.HTTP_400_BAD_REQUEST)
-
 
 class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
     '''Вьюсет рецептов'''
@@ -127,16 +105,33 @@ class RecipeViewSet(viewsets.ModelViewSet, CreateDeliteMixin):
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(Favourite, request.user, *args, **kwargs)
-        return self.delete_method(Favourite, request.user, *args, **kwargs)
+            return self.create_method(Favourite, request.user, pk)
+        return self.delete_method(Favourite, request.user, *args, pk)
 
     @action(detail=True,
             methods=['POST', 'DELETE'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
-            return self.create_method(ShoppingCart, request.user, *args, **kwargs)
-        return self.delete_method(ShoppingCart, request.user, *args, **kwargs)
+            return self.create_method(ShoppingCart, request.user, pk)
+        return self.delete_method(ShoppingCart, request.user, pk)
+      
+    def create_method(self, model, user, pk):
+        if model.objects.filter(user=user, recipe__id=pk).exists():
+            return Response({'errors': 'Рецепт уже в списке'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        recipe = get_object_or_404(Recipe, id=pk)
+        model.objects.create(user=user, recipe=recipe)
+        serializer = ShortRecipeSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete_method(self, model, user, pk):
+        obj = model.objects.filter(user=user, recipe__id=pk)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'errors': 'Рецепта нет в списке'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,
