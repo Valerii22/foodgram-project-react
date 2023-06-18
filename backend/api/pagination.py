@@ -2,5 +2,5 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class CustomPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 9
     page_size_param = 'limit'
