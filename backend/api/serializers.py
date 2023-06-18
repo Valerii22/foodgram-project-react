@@ -57,7 +57,7 @@ class SubscribeSerializer(CurrentUserSerializer):
     '''Сериализатор подписoк'''
 
     recipes_count = serializers.ReadOnlyField(source='author.recipes.count',
-                                             read_only=True)
+                                              read_only=True)
     recipes = ShortRecipeSerializer(many=True, read_only=True)
     is_subscribed = serializers.BooleanField(default=True)
 
