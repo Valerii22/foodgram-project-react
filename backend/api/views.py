@@ -27,8 +27,7 @@ class CurrentUserViewSet(UserViewSet):
 
     @action(detail=False,
             methods=['GET'],
-            permission_classes=[IsAuthenticated],
-            pagination_class=CustomPagination)
+            permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
         queryset = User.objects.filter(following__user=user)
