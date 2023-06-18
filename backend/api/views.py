@@ -112,7 +112,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             return self.create_method(ShoppingCart, request.user, pk)
         return self.delete_method(ShoppingCart, request.user, pk)
-      
+
     def create_method(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response({'errors': 'Рецепт уже в списке'},
