@@ -40,6 +40,17 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+      
+      
+class ShortRecipeSerializer(ModelSerializer):
+    '''
+    Дополнительный сериализатор для отображения рецептов
+    в подписках, избранном и покупках
+    '''
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class SubscribeSerializer(CurrentUserSerializer):
@@ -57,17 +68,6 @@ class SubscribeSerializer(CurrentUserSerializer):
                   'is_subscribed')
         read_only_fields = ('email', 'username',
                             'first_name', 'last_name')
-
-
-class ShortRecipeSerializer(ModelSerializer):
-    '''
-    Дополнительный сериализатор для отображения рецептов
-    в подписках, избранном и покупках
-    '''
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class TagSerializer(serializers.ModelSerializer):
